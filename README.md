@@ -17,3 +17,9 @@ Output
 
 * Defect distributions on the FeS<sub>2</sub> surface are printed out in `fp-*.txt` files after a fixed number of kMC steps. The latest version of the file is stored as `forplot.txt`
 * Use the gnuplot script in the `vis` folder to plot out a simulated STM-image of the surface
+
+
+Repo
+-----
+
+This repo is available at Bitbucket (https://bitbucket.org/arvk/fes2-surface-kmc) and github.mit.edu (https://github.mit.edu/aravindk/fes2-surface-kmc)
