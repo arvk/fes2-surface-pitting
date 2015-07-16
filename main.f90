@@ -2,23 +2,24 @@ MODULE commondata
   IMPLICIT NONE
   SAVE
 
+! Data type for an 'event' -- contains from and to coordinates and event probability
   TYPE :: prol
      INTEGER :: fx,fy,fz,tx,ty,tz
      REAL*8 :: prob
   END TYPE prol
 
   TYPE(prol), DIMENSION(:,:), ALLOCATABLE :: proc1, proc2, proc3
-  INTEGER, DIMENSION(:,:,:), ALLOCATABLE :: posns ! rename to positions
-  INTEGER, DIMENSION(:,:,:), ALLOCATABLE :: initposns ! rename to initial_positions
-  INTEGER, DIMENSION(:), ALLOCATABLE :: noatoms ! rename to number_of_atoms
-  INTEGER :: nompa = 7 ! rename to no_of_moves_per_atom
-  INTEGER :: cs_x, cs_y, cs_z   ! rename to cell_size_x
-  INTEGER :: nospec ! rename to number_of_species
+  INTEGER, DIMENSION(:,:,:), ALLOCATABLE :: posns ! positions array
+  INTEGER, DIMENSION(:,:,:), ALLOCATABLE :: initposns ! initial positions
+  INTEGER, DIMENSION(:), ALLOCATABLE :: noatoms ! number of atoms
+  INTEGER :: nompa = 7 ! no of moves per atom
+  INTEGER :: cs_x, cs_y, cs_z   ! cell sizes
+  INTEGER :: nospec ! number of species
   INTEGER :: noiterations,nomcsteps
   INTEGER :: lx,ly,lz
-  INTEGER :: number_of_images = 250
+  INTEGER :: number_of_images = 250  ! number of output files
   INTEGER :: temperature
-  CHARACTER*3 :: temperature_string
+  CHARACTER*3 :: temperature_string  ! temperature as a string (for output files)
 END MODULE commondata
 
 
