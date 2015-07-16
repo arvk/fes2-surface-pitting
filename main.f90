@@ -1,271 +1,269 @@
-module commondata
-  implicit none
-  save
+MODULE commondata
+  IMPLICIT NONE
+  SAVE
 
-  type :: prol
-     integer :: fx,fy,fz,tx,ty,tz
-     real*8 :: prob
-  end type prol
+  TYPE :: prol
+     INTEGER :: fx,fy,fz,tx,ty,tz
+     REAL*8 :: prob
+  END TYPE prol
 
-  type(prol), dimension(:,:), allocatable :: proc1, proc2, proc3
-  integer, dimension(:,:,:), allocatable :: posns ! rename to positions
-  integer, dimension(:,:,:), allocatable :: initposns ! rename to initial_positions
-  integer, dimension(:), allocatable :: noatoms ! rename to number_of_atoms
-  integer :: nompa = 7 ! rename to no_of_moves_per_atom
-  integer :: cs_x, cs_y, cs_z   ! rename to cell_size_x
-  integer :: nospec ! rename to number_of_species
-  integer :: noiterations,nomcsteps
-  integer :: lx,ly,lz
-  integer :: number_of_images = 250
-  integer :: temperature
-character*3 :: temperature_string
-end module commondata
-
-
-program run_all_temps
-
-include 'mpif.h'
-
-integer :: ierr, num_procs, my_rank
-
-      call MPI_INIT ( ierr )
-      call MPI_COMM_RANK (MPI_COMM_WORLD, my_rank, ierr)
-      call MPI_COMM_SIZE (MPI_COMM_WORLD, num_procs, ierr)
+  TYPE(prol), DIMENSION(:,:), ALLOCATABLE :: proc1, proc2, proc3
+  INTEGER, DIMENSION(:,:,:), ALLOCATABLE :: posns ! rename to positions
+  INTEGER, DIMENSION(:,:,:), ALLOCATABLE :: initposns ! rename to initial_positions
+  INTEGER, DIMENSION(:), ALLOCATABLE :: noatoms ! rename to number_of_atoms
+  INTEGER :: nompa = 7 ! rename to no_of_moves_per_atom
+  INTEGER :: cs_x, cs_y, cs_z   ! rename to cell_size_x
+  INTEGER :: nospec ! rename to number_of_species
+  INTEGER :: noiterations,nomcsteps
+  INTEGER :: lx,ly,lz
+  INTEGER :: number_of_images = 250
+  INTEGER :: temperature
+  CHARACTER*3 :: temperature_string
+END MODULE commondata
 
 
-        if (my_rank .eq. 0) then
-           call kmc(298)
-        else if (my_rank .eq. 1) then
-           call kmc(299)
-        else if (my_rank .eq. 2) then
-           call kmc(393)
-        else if (my_rank .eq. 3) then
-           call kmc(394)
-        else if (my_rank .eq. 4) then
-           call kmc(443)
-        else if (my_rank .eq. 5) then
-           call kmc(444)
-        else if (my_rank .eq. 6) then
-           call kmc(483)
-        else if (my_rank .eq. 7) then
-           call kmc(484)
-        else if (my_rank .eq. 8) then
-           call kmc(513)
-        else if (my_rank .eq. 9) then
-           call kmc(514)
-        else if (my_rank .eq. 10) then
-           call kmc(543)
-        else if (my_rank .eq. 11) then
-           call kmc(544)
-        else if (my_rank .eq. 12) then
-           call kmc(573)
-        else if (my_rank .eq. 13) then
-           call kmc(574)
-        else if (my_rank .eq. 14) then
-           call kmc(603)
-        else if (my_rank .eq. 15) then
-           call kmc(604)
-        end if
+PROGRAM run_all_temps
 
-      call MPI_FINALIZE ( ierr )
+INCLUDE 'mpif.h'
 
-end program
+INTEGER :: ierr, num_procs, my_rank
 
-subroutine kmc(dummy_temperature)
-  use commondata
-  implicit none
+      CALL MPI_INIT ( ierr )
+      CALL MPI_COMM_RANK (MPI_COMM_WORLD, my_rank, ierr)
+      CALL MPI_COMM_SIZE (MPI_COMM_WORLD, num_procs, ierr)
 
-  integer :: atom_id = 0
-  integer :: lp, lq, lr, ls ! looping index, rename to loop_p, ...
-  real :: rd1, rd2, rd3 ! dummy variables. reduce as much as possible
-  integer :: pt ! change to process_type
-  real*8 :: p1_prob, p2_prob, p3_prob, p4_prob, p5_prob, p6_prob, p7_prob
-  real*8 :: fl_1, fl_2
-  integer :: sp1, sp2 ! rename to selected_process_1...
-  integer :: rand1, rand2, rand3
-  character*12 :: filename
-  real*8 :: mc_step_timescale
-  integer :: current_mc_step, current_iteration
-  real*8 :: get_displacement, total_displacement
-  integer :: q1, q2, q3, q4
-  integer :: rand_seed_size
-  integer, dimension(1) :: rand_seed
-  real*8, dimension(:), allocatable :: monomer_s, surface_s
-  integer :: xloop, yloop, xl, yl
-  real*8 :: neighborhood
-  real*8 :: time_of_experiment
-  integer :: image_id_mc, image_id_iter
-  character*5 :: image_id_mc_string, image_id_iter_string
-  integer :: temp_monomer_count
-  character(LEN=10) :: date, time
-  integer :: dates(8)
-  integer :: dummy_temperature
+
+        IF (my_rank .EQ. 0) THEN
+           CALL kmc(298)
+        ELSE IF (my_rank .EQ. 1) THEN
+           CALL kmc(299)
+        ELSE IF (my_rank .EQ. 2) THEN
+           CALL kmc(393)
+        ELSE IF (my_rank .EQ. 3) THEN
+           CALL kmc(394)
+        ELSE IF (my_rank .EQ. 4) THEN
+           CALL kmc(443)
+        ELSE IF (my_rank .EQ. 5) THEN
+           CALL kmc(444)
+        ELSE IF (my_rank .EQ. 6) THEN
+           CALL kmc(483)
+        ELSE IF (my_rank .EQ. 7) THEN
+           CALL kmc(484)
+        ELSE IF (my_rank .EQ. 8) THEN
+           CALL kmc(513)
+        ELSE IF (my_rank .EQ. 9) THEN
+           CALL kmc(514)
+        ELSE IF (my_rank .EQ. 10) THEN
+           CALL kmc(543)
+        ELSE IF (my_rank .EQ. 11) THEN
+           CALL kmc(544)
+        ELSE IF (my_rank .EQ. 12) THEN
+           CALL kmc(573)
+        ELSE IF (my_rank .EQ. 13) THEN
+           CALL kmc(574)
+        ELSE IF (my_rank .EQ. 14) THEN
+           CALL kmc(603)
+        ELSE IF (my_rank .EQ. 15) THEN
+           CALL kmc(604)
+        END IF
+
+      CALL MPI_FINALIZE ( ierr )
+
+END PROGRAM
+
+SUBROUTINE kmc(dummy_temperature)
+  USE commondata
+  IMPLICIT NONE
+
+  INTEGER :: atom_id = 0
+  INTEGER :: lp, lq, lr, ls ! looping index, rename to loop_p, ...
+  REAL :: rd1, rd2, rd3 ! dummy variables. reduce as much as possible
+  INTEGER :: pt ! change to process_type
+  REAL*8 :: p1_prob, p2_prob, p3_prob, p4_prob, p5_prob, p6_prob, p7_prob
+  REAL*8 :: fl_1, fl_2
+  INTEGER :: sp1, sp2 ! rename to selected_process_1...
+  INTEGER :: rand1, rand2, rand3
+  CHARACTER*12 :: filename
+  REAL*8 :: mc_step_timescale
+  INTEGER :: current_mc_step, current_iteration
+  REAL*8 :: get_displacement, total_displacement
+  INTEGER :: q1, q2, q3, q4
+  INTEGER :: rand_seed_size
+  INTEGER, DIMENSION(1) :: rand_seed
+  REAL*8, DIMENSION(:), ALLOCATABLE :: monomer_s, surface_s
+  INTEGER :: xloop, yloop, xl, yl
+  REAL*8 :: neighborhood
+  REAL*8 :: time_of_experiment
+  INTEGER :: image_id_mc, image_id_iter
+  CHARACTER*5 :: image_id_mc_string, image_id_iter_string
+  INTEGER :: temp_monomer_count
+  CHARACTER(LEN=10) :: date, time
+  INTEGER :: dates(8)
+  INTEGER :: dummy_temperature
 
   temperature = dummy_temperature
-  write(temperature_string,'(I3)') temperature
+  WRITE(temperature_string,'(I3)') temperature
 
-  call read_parameters()
+  CALL read_parameters()
 
-  allocate(proc1(sum(noatoms),nompa)); allocate(proc2(sum(noatoms),nompa)); allocate(proc3(sum(noatoms),nompa))
-  allocate(monomer_s(nomcsteps))
-  allocate(surface_s(nomcsteps))
+  ALLOCATE(proc1(SUM(noatoms),nompa)); ALLOCATE(proc2(SUM(noatoms),nompa)); ALLOCATE(proc3(SUM(noatoms),nompa))
+  ALLOCATE(monomer_s(nomcsteps))
+  ALLOCATE(surface_s(nomcsteps))
 
-  call initialize_positions()
-  call initialize_plist()
+  CALL initialize_positions()
+  CALL initialize_plist()
 
   CALL DATE_AND_TIME(date,time,VALUES=dates)
   rand_seed=dates(1)+dates(2)+dates(3)+dates(5)+dates(6)+dates(7)+dates(8)
 
   !rand_seed(1) = time()
   rand_seed_size = 1
-  call random_seed(size = rand_seed_size)  
-  call random_seed(put = rand_seed)
+  CALL RANDOM_SEED(size = rand_seed_size)
+  CALL RANDOM_SEED(put = rand_seed)
 
-  do current_iteration = 1,noiterations
+  DO current_iteration = 1,noiterations
 
      time_of_experiment = 0.0d0
      monomer_s = 0.0d0 ; surface_s = 0.0d0
 
      posns = initposns
-     call initialize_plist()
+     CALL initialize_plist()
 
-     do current_mc_step = 1,nomcsteps
+     DO current_mc_step = 1,nomcsteps
 
-        p1_prob = sum(proc1%prob) ; p2_prob = sum(proc2%prob) ; p3_prob = sum(proc3%prob)
+        p1_prob = SUM(proc1%prob) ; p2_prob = SUM(proc2%prob) ; p3_prob = SUM(proc3%prob)
 
-        call random_number(rd1)
+        CALL RANDOM_NUMBER(rd1)
 
         fl_1 = rd1*(p1_prob+p2_prob+p3_prob)
 
-        if (fl_1 .le. p1_prob) then
+        IF (fl_1 .LE. p1_prob) THEN
            sp1 = 1
 !           write(6,*) dummy_temperature, 'CHOSEN PROCESS: 1'
-        else if ((fl_1 .gt. p1_prob) .and. (fl_1 .le. p1_prob+p2_prob)) then
+        ELSE IF ((fl_1 .GT. p1_prob) .AND. (fl_1 .LE. p1_prob+p2_prob)) THEN
            sp1 = 2
 !           write(6,*) dummy_temperature, 'CHOSEN PROCESS: 2'
-        else
+        ELSE
            sp1 = 3
 !           write(6,*) dummy_temperature, 'CHOSEN PROCESS: 3'
-        end if
+        END IF
 
-        call make_move(sp1)
-
-
-        call random_number(rd3)
-
-        do while (rd3 .eq. 0 )
-           call random_number(rd3)
-        end do
-
-        time_of_experiment = time_of_experiment - ((1.0d0/(p1_prob+p2_prob+p3_prob))*log(rd3))
+        CALL make_move(sp1)
 
 
+        CALL RANDOM_NUMBER(rd3)
 
-        do rand1 = 1,cs_x
-           do rand2 = 1,cs_y
-              if (mod(rand1+rand2+2,2).gt.0) then ! Choose S sites
-                 if (posns(rand1,rand2,2) .eq. 1) then ! Find monomer vacancies
+        DO WHILE (rd3 .EQ. 0 )
+           CALL RANDOM_NUMBER(rd3)
+        END DO
+
+        time_of_experiment = time_of_experiment - ((1.0d0/(p1_prob+p2_prob+p3_prob))*LOG(rd3))
+
+
+
+        DO rand1 = 1,cs_x
+           DO rand2 = 1,cs_y
+              IF (MOD(rand1+rand2+2,2).GT.0) THEN ! Choose S sites
+                 IF (posns(rand1,rand2,2) .EQ. 1) THEN ! Find monomer vacancies
                     monomer_s(current_mc_step) = monomer_s(current_mc_step) + 1.0d0
-                 else ! If the site is not a monomer, i.e. it is a dimer or defect-free
+                 ELSE ! If the site is not a monomer, i.e. it is a dimer or defect-free
                     surface_s(current_mc_step) = surface_s(current_mc_step) + 1.0d0
-                 end if
-              end if
-           end do
-        end do
+                 END IF
+              END IF
+           END DO
+        END DO
 
 
 
 
-        if (mod(current_mc_step, ((nomcsteps/number_of_images)-1) ).eq.0) then
+        IF (MOD(current_mc_step, ((nomcsteps/number_of_images)-1) ).EQ.0) THEN
            image_id_mc = (current_mc_step/((nomcsteps/number_of_images)-1))
-           write(image_id_mc_string,'(I5.5)') image_id_mc
-           write(image_id_iter_string,'(I5.5)') current_iteration
+           WRITE(image_id_mc_string,'(I5.5)') image_id_mc
+           WRITE(image_id_iter_string,'(I5.5)') current_iteration
 
-           open (unit = 700, file = trim(temperature_string)//'K/forplot.txt')
+           OPEN (unit = 700, file = TRIM(temperature_string)//'K/forplot.txt')
 
 
-           write(700,*) "# Experiment Time : ", time_of_experiment, " seconds. "
+           WRITE(700,*) "# Experiment Time : ", time_of_experiment, " seconds. "
 
 
            temp_monomer_count = 0
 
-           do rand1 = 1,cs_x
-              do rand2 = 1,cs_y
-                 if (mod(rand1+rand2+2,2).gt.0) then ! Choose S sites
-                    if (posns(rand1,rand2,2) .eq. 1) then ! Find monomer vacancies
+           DO rand1 = 1,cs_x
+              DO rand2 = 1,cs_y
+                 IF (MOD(rand1+rand2+2,2).GT.0) THEN ! Choose S sites
+                    IF (posns(rand1,rand2,2) .EQ. 1) THEN ! Find monomer vacancies
                        temp_monomer_count = temp_monomer_count + 1
-                    end if
-                 end if
-              end do
-           end do
+                    END IF
+                 END IF
+              END DO
+           END DO
 
 
-           write(700,*) "# Number of monomer species : ", temp_monomer_count
+           WRITE(700,*) "# Number of monomer species : ", temp_monomer_count
 
 
-           do rand1 = 1,cs_x
-              do rand2 = 1,cs_y
+           DO rand1 = 1,cs_x
+              DO rand2 = 1,cs_y
 
-                 if (posns(rand1,rand2,2) .ne. 0) then
+                 IF (posns(rand1,rand2,2) .NE. 0) THEN
 
-                    write(700,'(I10,I10,F9.3)') rand1, rand2, 2.0d0
+                    WRITE(700,'(I10,I10,F9.3)') rand1, rand2, 2.0d0
 
-                 else
+                 ELSE
 
                     neighborhood = 0
 
-                    do xloop = rand1-1,rand1+1
-                       do yloop = rand2-1,rand2+1
+                    DO xloop = rand1-1,rand1+1
+                       DO yloop = rand2-1,rand2+1
 
-                          if (xloop<1) then
+                          IF (xloop<1) THEN
                              xl = cs_x
-                          elseif (xloop>cs_x) then
+                          ELSEIF (xloop>cs_x) THEN
                              xl = 1
-                          else
+                          ELSE
                              xl = xloop
-                          end if
+                          END IF
 
-                          if (yloop<1) then
+                          IF (yloop<1) THEN
                              yl = cs_y
-                          elseif (yloop>cs_y) then
+                          ELSEIF (yloop>cs_y) THEN
                              yl = 1
-                          else
+                          ELSE
                              yl = yloop
-                          end if
+                          END IF
 
                           neighborhood = neighborhood + posns(xl,yl,2)
 
 
 
-                       end do
-                    end do
+                       END DO
+                    END DO
 
-                    write(700,'(I10,I10,F9.3)') rand1, rand2, 0.0d0+(neighborhood/9.0d0)
+                    WRITE(700,'(I10,I10,F9.3)') rand1, rand2, 0.0d0+(neighborhood/9.0d0)
 
-                 end if
-
-
-              end do
-           end do
+                 END IF
 
 
-           close(700)
+              END DO
+           END DO
 
 
-
-           call system('cp '//trim(temperature_string)//'K/forplot.txt '//trim(temperature_string)//'K/fp-'//trim(image_id_iter_string)//'-'//trim(image_id_mc_string)//'.txt')
-
-        end if
-
-
-     end do
-  end do
+           CLOSE(700)
 
 
 
-end subroutine kmc
+           CALL system('cp '//TRIM(temperature_string)//'K/forplot.txt '//TRIM(temperature_string)//'K/fp-'//TRIM(image_id_iter_string)//'-'//TRIM(image_id_mc_string)//'.txt')
+
+        END IF
 
 
+     END DO
+  END DO
+
+
+
+END SUBROUTINE kmc
 
 
 
@@ -283,32 +281,34 @@ end subroutine kmc
 
 
 
-subroutine make_move(sp1)
-  use commondata
-  implicit none
-  integer :: sp1, rn1, rn2, lp
-  integer :: moved_to_x, moved_to_y, moved_to_z
-  integer :: moved_from_x, moved_from_y, moved_from_z
-  integer :: botval ! PLEASE change variable name
-  integer :: lattice_id, mpa
-  real*8 :: rd1,cutoff, tripper
 
-  integer :: rand_seed_size
-  integer, dimension(1) :: rand_seed
 
-  call random_number(rd1)
+SUBROUTINE make_move(sp1)
+  USE commondata
+  IMPLICIT NONE
+  INTEGER :: sp1, rn1, rn2, lp
+  INTEGER :: moved_to_x, moved_to_y, moved_to_z
+  INTEGER :: moved_from_x, moved_from_y, moved_from_z
+  INTEGER :: botval ! PLEASE change variable name
+  INTEGER :: lattice_id, mpa
+  REAL*8 :: rd1,cutoff, tripper
 
-  if (sp1 == 1) then
+  INTEGER :: rand_seed_size
+  INTEGER, DIMENSION(1) :: rand_seed
+
+  CALL RANDOM_NUMBER(rd1)
+
+  IF (sp1 == 1) THEN
 
      tripper = 0.0d0
-     cutoff = rd1*sum(proc1%prob)
+     cutoff = rd1*SUM(proc1%prob)
 
-     do lattice_id = 1,sum(noatoms)
-        do mpa = 1,nompa
+     DO lattice_id = 1,SUM(noatoms)
+        DO mpa = 1,nompa
 
            tripper = tripper + proc1(lattice_id, mpa)%prob
 
-           if (tripper .ge. cutoff) then
+           IF (tripper .GE. cutoff) THEN
 
               rn1 = lattice_id
               rn2 = mpa
@@ -316,36 +316,36 @@ subroutine make_move(sp1)
               moved_from_x = proc1(rn1,rn2)%fx ; moved_from_y = proc1(rn1,rn2)%fy ; moved_from_z = proc1(rn1,rn2)%fz
               moved_to_x = proc1(rn1,rn2)%tx ; moved_to_y = proc1(rn1,rn2)%ty ; moved_to_z = proc1(rn1,rn2)%tz
 
-              if (mod(moved_from_x+moved_from_y+moved_from_z,2).gt.0) then
+              IF (MOD(moved_from_x+moved_from_y+moved_from_z,2).GT.0) THEN
 posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)=posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)-1
-              else
+              ELSE
 posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)=posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)-2
-              end if
+              END IF
 
-              call rfpls(moved_from_x,moved_from_y,moved_from_z) ; call add_to_plist(moved_from_x,moved_from_y,moved_from_z)
-              call rfpls(moved_to_x,moved_to_y,moved_to_z) ; call add_to_plist(moved_to_x,moved_to_y,moved_to_z)
-              call upnl(moved_from_x,moved_from_y,moved_from_z) ; call upnl(moved_to_x,moved_to_y,moved_to_z)
+              CALL rfpls(moved_from_x,moved_from_y,moved_from_z) ; CALL add_to_plist(moved_from_x,moved_from_y,moved_from_z)
+              CALL rfpls(moved_to_x,moved_to_y,moved_to_z) ; CALL add_to_plist(moved_to_x,moved_to_y,moved_to_z)
+              CALL upnl(moved_from_x,moved_from_y,moved_from_z) ; CALL upnl(moved_to_x,moved_to_y,moved_to_z)
 
-              exit
-           else
+              EXIT
+           ELSE
 
-           end if
-        end do
-        if (tripper .ge. cutoff) exit
-     end do
+           END IF
+        END DO
+        IF (tripper .GE. cutoff) EXIT
+     END DO
 
 
-  else if (sp1 == 2) then
+  ELSE IF (sp1 == 2) THEN
 
      tripper = 0.0d0
-     cutoff = rd1*sum(proc2%prob)
+     cutoff = rd1*SUM(proc2%prob)
 
-     do lattice_id = 1,sum(noatoms)
-        do mpa = 1,nompa
+     DO lattice_id = 1,SUM(noatoms)
+        DO mpa = 1,nompa
 
            tripper = tripper + proc2(lattice_id, mpa)%prob
 
-           if (tripper .ge. cutoff) then
+           IF (tripper .GE. cutoff) THEN
 
               rn1 = lattice_id
               rn2 = mpa
@@ -353,39 +353,39 @@ posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)=posns(proc1(rn1,rn2
               moved_from_x = proc2(rn1,rn2)%fx ; moved_from_y = proc2(rn1,rn2)%fy ; moved_from_z = proc2(rn1,rn2)%fz
               moved_to_x = proc2(rn1,rn2)%tx ; moved_to_y = proc2(rn1,rn2)%ty ; moved_to_z = proc2(rn1,rn2)%tz
 
-              if (mod(moved_from_x+moved_from_y+moved_from_z,2).gt.0) then
+              IF (MOD(moved_from_x+moved_from_y+moved_from_z,2).GT.0) THEN
 posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)=posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)+1
-              else
+              ELSE
 posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)=posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)+2
-              end if
+              END IF
 
-              call rfpls(moved_from_x,moved_from_y,moved_from_z) ; call add_to_plist(moved_from_x,moved_from_y,moved_from_z)
-              call rfpls(moved_to_x,moved_to_y,moved_to_z) ; call add_to_plist(moved_to_x,moved_to_y,moved_to_z)
-              call upnl(moved_from_x,moved_from_y,moved_from_z) ; call upnl(moved_to_x,moved_to_y,moved_to_z)
+              CALL rfpls(moved_from_x,moved_from_y,moved_from_z) ; CALL add_to_plist(moved_from_x,moved_from_y,moved_from_z)
+              CALL rfpls(moved_to_x,moved_to_y,moved_to_z) ; CALL add_to_plist(moved_to_x,moved_to_y,moved_to_z)
+              CALL upnl(moved_from_x,moved_from_y,moved_from_z) ; CALL upnl(moved_to_x,moved_to_y,moved_to_z)
 
-              exit
-           else
+              EXIT
+           ELSE
 
-           end if
-        end do
-        if (tripper .ge. cutoff) exit
-     end do
-
-
+           END IF
+        END DO
+        IF (tripper .GE. cutoff) EXIT
+     END DO
 
 
 
-  else if (sp1 == 3) then
+
+
+  ELSE IF (sp1 == 3) THEN
 
      tripper = 0.0d0
-     cutoff = rd1*sum(proc3%prob)
+     cutoff = rd1*SUM(proc3%prob)
 
-     do lattice_id = 1,sum(noatoms)
-        do mpa = 1,nompa
+     DO lattice_id = 1,SUM(noatoms)
+        DO mpa = 1,nompa
 
            tripper = tripper + proc3(lattice_id, mpa)%prob
 
-           if (tripper .ge. cutoff) then
+           IF (tripper .GE. cutoff) THEN
 
               rn1 = lattice_id
               rn2 = mpa
@@ -393,54 +393,54 @@ posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)=posns(proc2(rn1,rn2
               moved_from_x = proc3(rn1,rn2)%fx ; moved_from_y = proc3(rn1,rn2)%fy ; moved_from_z = proc3(rn1,rn2)%fz
               moved_to_x = proc3(rn1,rn2)%tx ; moved_to_y = proc3(rn1,rn2)%ty ; moved_to_z = proc3(rn1,rn2)%tz
 
-              if (mod(moved_from_x+moved_from_y+moved_from_z,2).gt.0) then
+              IF (MOD(moved_from_x+moved_from_y+moved_from_z,2).GT.0) THEN
 posns(proc3(rn1,rn2)%fx,proc3(rn1,rn2)%fy,proc3(rn1,rn2)%fz)=posns(proc3(rn1,rn2)%fx,proc3(rn1,rn2)%fy,proc3(rn1,rn2)%fz)+1
 posns(proc3(rn1,rn2)%tx,proc3(rn1,rn2)%ty,proc3(rn1,rn2)%tz)=posns(proc3(rn1,rn2)%tx,proc3(rn1,rn2)%ty,proc3(rn1,rn2)%tz)-1
-              else
+              ELSE
 posns(proc3(rn1,rn2)%fx,proc3(rn1,rn2)%fy,proc3(rn1,rn2)%fz)=posns(proc3(rn1,rn2)%fx,proc3(rn1,rn2)%fy,proc3(rn1,rn2)%fz)+2
 posns(proc3(rn1,rn2)%tx,proc3(rn1,rn2)%ty,proc3(rn1,rn2)%tz)=posns(proc3(rn1,rn2)%tx,proc3(rn1,rn2)%ty,proc3(rn1,rn2)%tz)-2
-              end if
+              END IF
 
-              call rfpls(moved_from_x,moved_from_y,moved_from_z) ; call add_to_plist(moved_from_x,moved_from_y,moved_from_z)
-              call rfpls(moved_to_x,moved_to_y,moved_to_z) ; call add_to_plist(moved_to_x,moved_to_y,moved_to_z)
-              call upnl(moved_from_x,moved_from_y,moved_from_z) ; call upnl(moved_to_x,moved_to_y,moved_to_z)
+              CALL rfpls(moved_from_x,moved_from_y,moved_from_z) ; CALL add_to_plist(moved_from_x,moved_from_y,moved_from_z)
+              CALL rfpls(moved_to_x,moved_to_y,moved_to_z) ; CALL add_to_plist(moved_to_x,moved_to_y,moved_to_z)
+              CALL upnl(moved_from_x,moved_from_y,moved_from_z) ; CALL upnl(moved_to_x,moved_to_y,moved_to_z)
 
-              exit
-           else
-
-
-           end if
-        end do
-        if (tripper .ge. cutoff) exit
-     end do
-
-  end if
+              EXIT
+           ELSE
 
 
-end subroutine make_move
+           END IF
+        END DO
+        IF (tripper .GE. cutoff) EXIT
+     END DO
 
-subroutine initialize_positions()
-  use commondata
-  implicit none
+  END IF
 
-  integer :: rand_seed_size
-  integer, dimension(1) :: rand_seed
-  integer :: atom_type, numb_of_atoms, random_integer
-  integer :: x_pos, y_pos, z_pos, x_loop, y_loop, z_loop
-  real*8 :: random_double
+
+END SUBROUTINE make_move
+
+SUBROUTINE initialize_positions()
+  USE commondata
+  IMPLICIT NONE
+
+  INTEGER :: rand_seed_size
+  INTEGER, DIMENSION(1) :: rand_seed
+  INTEGER :: atom_type, numb_of_atoms, random_integer
+  INTEGER :: x_pos, y_pos, z_pos, x_loop, y_loop, z_loop
+  REAL*8 :: random_double
 
   ! Distribute atoms
-  allocate(initposns(cs_x,cs_y,cs_z))
-  allocate(posns(cs_x,cs_y,cs_z))
+  ALLOCATE(initposns(cs_x,cs_y,cs_z))
+  ALLOCATE(posns(cs_x,cs_y,cs_z))
 
-  do x_loop = 1, cs_x
-     do y_loop = 1, cs_y
+  DO x_loop = 1, cs_x
+     DO y_loop = 1, cs_y
         posns(x_loop,y_loop, cs_z) = 2
-        do z_loop = 1, cs_z-1
+        DO z_loop = 1, cs_z-1
            posns(x_loop,y_loop,z_loop) = 2
-        end do
-     end do
-  end do
+        END DO
+     END DO
+  END DO
 
 
   initposns = posns
@@ -448,201 +448,201 @@ subroutine initialize_positions()
 
 
 
-end subroutine initialize_positions
-subroutine initialize_plist()
-  use commondata
-  implicit none
+END SUBROUTINE initialize_positions
+SUBROUTINE initialize_plist()
+  USE commondata
+  IMPLICIT NONE
 
-  integer :: atom_id, pid
-  integer :: x_pos, y_pos, z_pos
+  INTEGER :: atom_id, pid
+  INTEGER :: x_pos, y_pos, z_pos
 
-  do atom_id = 1, sum(noatoms)
-     do pid = 1, nompa
+  DO atom_id = 1, SUM(noatoms)
+     DO pid = 1, nompa
 
-        proc1(atom_id,pid)%fx = 0 ; proc1(atom_id,pid)%fy = 0 ; proc1(atom_id,pid)%fz = 0 
-        proc1(atom_id,pid)%tx = 0 ; proc1(atom_id,pid)%ty = 0 ; proc1(atom_id,pid)%tz = 0 
+        proc1(atom_id,pid)%fx = 0 ; proc1(atom_id,pid)%fy = 0 ; proc1(atom_id,pid)%fz = 0
+        proc1(atom_id,pid)%tx = 0 ; proc1(atom_id,pid)%ty = 0 ; proc1(atom_id,pid)%tz = 0
         proc1(atom_id,pid)%prob = 0.0d0
 
-        proc2(atom_id,pid)%fx = 0 ; proc2(atom_id,pid)%fy = 0 ; proc2(atom_id,pid)%fz = 0 
+        proc2(atom_id,pid)%fx = 0 ; proc2(atom_id,pid)%fy = 0 ; proc2(atom_id,pid)%fz = 0
         proc2(atom_id,pid)%tx = 0 ; proc2(atom_id,pid)%ty = 0 ; proc2(atom_id,pid)%tz = 0
         proc2(atom_id,pid)%prob = 0.0d0
 
-        proc3(atom_id,pid)%fx = 0 ; proc3(atom_id,pid)%fy = 0 ; proc3(atom_id,pid)%fz = 0 
-        proc3(atom_id,pid)%tx = 0 ; proc3(atom_id,pid)%ty = 0 ; proc3(atom_id,pid)%tz = 0 
+        proc3(atom_id,pid)%fx = 0 ; proc3(atom_id,pid)%fy = 0 ; proc3(atom_id,pid)%fz = 0
+        proc3(atom_id,pid)%tx = 0 ; proc3(atom_id,pid)%ty = 0 ; proc3(atom_id,pid)%tz = 0
         proc3(atom_id,pid)%prob = 0.0d0
 
-     end do
-  end do
+     END DO
+  END DO
 
 
   atom_id = 0
 
-  do z_pos = 1, cs_z
-     do y_pos = 1, cs_y
-        do x_pos = 1, cs_x
-              call add_to_plist(x_pos,y_pos,z_pos)
-        end do
-     end do
-  end do
+  DO z_pos = 1, cs_z
+     DO y_pos = 1, cs_y
+        DO x_pos = 1, cs_x
+              CALL add_to_plist(x_pos,y_pos,z_pos)
+        END DO
+     END DO
+  END DO
 
-end subroutine initialize_plist
+END SUBROUTINE initialize_plist
 
-subroutine read_parameters()
-  use commondata
-  implicit none
+SUBROUTINE read_parameters()
+  USE commondata
+  IMPLICIT NONE
 
-write(6,*) trim(temperature_string)
+WRITE(6,*) TRIM(temperature_string)
 
   ! Read lattice parameters
-  call system("cat "//trim(temperature_string)//"K/param.in | grep ^LATTICE | sed 's/LATTICE//g'| sed 's/=//g' > "//trim(temperature_string)//"K/.toget-lattice")
-  open(unit = 7001, file = ""//trim(temperature_string)//"K/.toget-lattice", status = 'old') ; read(7001,*) cs_x, cs_y, cs_z ; close(7001)
-write(6,*) 'Hi'
-  call system ("rm "//trim(temperature_string)//"K/.toget-lattice")
+  CALL system("cat "//TRIM(temperature_string)//"K/param.in | grep ^LATTICE | sed 's/LATTICE//g'| sed 's/=//g' > "//TRIM(temperature_string)//"K/.toget-lattice")
+  OPEN(unit = 7001, file = ""//TRIM(temperature_string)//"K/.toget-lattice", status = 'old') ; READ(7001,*) cs_x, cs_y, cs_z ; CLOSE(7001)
+WRITE(6,*) 'Hi'
+  CALL system ("rm "//TRIM(temperature_string)//"K/.toget-lattice")
 
   ! Read number of species and number of atoms in each species
-  call system("cat "//trim(temperature_string)//"K/param.in | grep ^SPECIES | sed 's/SPECIES//g'| sed 's/=//g' | awk '{print NF}' > "//trim(temperature_string)//"K/.toget-numbofspec")
-  open(unit = 7002, file = ""//trim(temperature_string)//"K/.toget-numbofspec", status = 'old') ; read(7002,*) nospec ; close(7002)
-  call system ("rm "//trim(temperature_string)//"K/.toget-numbofspec")
-  allocate(noatoms(nospec))
-  call system("cat "//trim(temperature_string)//"K/param.in | grep ^SPECIES | sed 's/SPECIES//g'| sed 's/=//g' > "//trim(temperature_string)//"K/.toget-numbofatoms")
-  open(unit = 7003, file = trim(temperature_string)//'K/.toget-numbofatoms', status = 'old') ; read(7003,*) noatoms ; close(7003)
-  call system ("rm "//trim(temperature_string)//"K/.toget-numbofatoms")
+  CALL system("cat "//TRIM(temperature_string)//"K/param.in | grep ^SPECIES | sed 's/SPECIES//g'| sed 's/=//g' | awk '{print NF}' > "//TRIM(temperature_string)//"K/.toget-numbofspec")
+  OPEN(unit = 7002, file = ""//TRIM(temperature_string)//"K/.toget-numbofspec", status = 'old') ; READ(7002,*) nospec ; CLOSE(7002)
+  CALL system ("rm "//TRIM(temperature_string)//"K/.toget-numbofspec")
+  ALLOCATE(noatoms(nospec))
+  CALL system("cat "//TRIM(temperature_string)//"K/param.in | grep ^SPECIES | sed 's/SPECIES//g'| sed 's/=//g' > "//TRIM(temperature_string)//"K/.toget-numbofatoms")
+  OPEN(unit = 7003, file = TRIM(temperature_string)//'K/.toget-numbofatoms', status = 'old') ; READ(7003,*) noatoms ; CLOSE(7003)
+  CALL system ("rm "//TRIM(temperature_string)//"K/.toget-numbofatoms")
 
   ! Read number of steps
-  call system("cat "//trim(temperature_string)//"K/param.in | grep ^MCSTEPS | sed 's/MCSTEPS//g'| sed 's/=//g' > "//trim(temperature_string)//"K/.toget-mcsteps")
-  open(unit = 7004, file = trim(temperature_string)//'K/.toget-mcsteps', status = 'old') ; read(7004,*) nomcsteps ; close(7004)
-  call system ("rm "//trim(temperature_string)//"K/.toget-mcsteps")
+  CALL system("cat "//TRIM(temperature_string)//"K/param.in | grep ^MCSTEPS | sed 's/MCSTEPS//g'| sed 's/=//g' > "//TRIM(temperature_string)//"K/.toget-mcsteps")
+  OPEN(unit = 7004, file = TRIM(temperature_string)//'K/.toget-mcsteps', status = 'old') ; READ(7004,*) nomcsteps ; CLOSE(7004)
+  CALL system ("rm "//TRIM(temperature_string)//"K/.toget-mcsteps")
 
   ! Read number of iterations
-  call system("cat "//trim(temperature_string)//"K/param.in | grep ^ITERATIONS | sed 's/ITERATIONS//g'| sed 's/=//g' > "//trim(temperature_string)//"K/.toget-iterations")
-  open(unit = 7005, file = trim(temperature_string)//'K/.toget-iterations', status = 'old') ; read(7005,*) noiterations ; close(7005)
-  call system ("rm "//trim(temperature_string)//"K/.toget-iterations")
+  CALL system("cat "//TRIM(temperature_string)//"K/param.in | grep ^ITERATIONS | sed 's/ITERATIONS//g'| sed 's/=//g' > "//TRIM(temperature_string)//"K/.toget-iterations")
+  OPEN(unit = 7005, file = TRIM(temperature_string)//'K/.toget-iterations', status = 'old') ; READ(7005,*) noiterations ; CLOSE(7005)
+  CALL system ("rm "//TRIM(temperature_string)//"K/.toget-iterations")
 
-end subroutine read_parameters
+END SUBROUTINE read_parameters
 
-subroutine add_to_plist(lp,lq,lr)
-  use commondata
-  implicit none
-  integer :: lp,lq,lr, atom_id, pt
-  integer :: loop1, loop2 ! PLEASE change variable names
-  integer :: xloop, yloop ! PLEASE change variable names
-  integer :: xp, yp, zp ! PLEASE change variable names
+SUBROUTINE add_to_plist(lp,lq,lr)
+  USE commondata
+  IMPLICIT NONE
+  INTEGER :: lp,lq,lr, atom_id, pt
+  INTEGER :: loop1, loop2 ! PLEASE change variable names
+  INTEGER :: xloop, yloop ! PLEASE change variable names
+  INTEGER :: xp, yp, zp ! PLEASE change variable names
 
 ! Create vacancies
-  if (posns(lp,lq,lr) .ne. 0) then 
-     pt = 1 ; call make_ptl(pt,lp,lq,lr,lp,lq,lr)
-  end if
+  IF (posns(lp,lq,lr) .NE. 0) THEN
+     pt = 1 ; CALL make_ptl(pt,lp,lq,lr,lp,lq,lr)
+  END IF
 
 ! Fill vacancies
-  if (posns(lp,lq,lr) .ne. 2) then 
-     pt = 2 ; call make_ptl(pt,lp,lq,lr,lp,lq,lr)
-  end if
+  IF (posns(lp,lq,lr) .NE. 2) THEN
+     pt = 2 ; CALL make_ptl(pt,lp,lq,lr,lp,lq,lr)
+  END IF
 
 ! Diffusion
-  if (posns(lp,lq,lr) .ne. 2) then 
+  IF (posns(lp,lq,lr) .NE. 2) THEN
 
-do xloop = lp-1,lp+1,2
-do yloop = lq-1,lq+1,2
+DO xloop = lp-1,lp+1,2
+DO yloop = lq-1,lq+1,2
 
-if (xloop<1)  then
+IF (xloop<1)  THEN
 loop1 = cs_x
-elseif (xloop>cs_x)then
+ELSEIF (xloop>cs_x)THEN
 loop1 = 1
-else
+ELSE
 loop1 = xloop
-end if
+END IF
 
-if (yloop<1)  then
+IF (yloop<1)  THEN
 loop2 = cs_x
-elseif (yloop>cs_x)then
+ELSEIF (yloop>cs_x)THEN
 loop2 = 1
-else
+ELSE
 loop2 = yloop
-end if
+END IF
 
-  if (posns(loop1,loop2,lr) .ne. 0) then 
-     pt = 3 ; call make_ptl(pt,lp,lq,lr,loop1,loop2,lr)
-  end if
+  IF (posns(loop1,loop2,lr) .NE. 0) THEN
+     pt = 3 ; CALL make_ptl(pt,lp,lq,lr,loop1,loop2,lr)
+  END IF
 
-end do
-end do
+END DO
+END DO
 
-  end if
+  END IF
 
-end subroutine add_to_plist
-
-
+END SUBROUTINE add_to_plist
 
 
 
 
 
-subroutine make_ptl(pt, fromx, fromy, fromz, tox, toy, toz)
-  use commondata
-  integer, intent(in) :: pt, fromx, fromy, fromz, tox, toy, toz
-  integer :: atom_id
-  real*8 :: kbT
-  real*8 :: process_barrier
-  real*8 :: s_surf, s_bulk, fe_surf, fe_bulk
-  real*8 :: neighborhood,neighborhoodfrom,neighborhoodto
-  integer :: xloop, yloop
+
+
+SUBROUTINE make_ptl(pt, fromx, fromy, fromz, tox, toy, toz)
+  USE commondata
+  INTEGER, INTENT(in) :: pt, fromx, fromy, fromz, tox, toy, toz
+  INTEGER :: atom_id
+  REAL*8 :: kbT
+  REAL*8 :: process_barrier
+  REAL*8 :: s_surf, s_bulk, fe_surf, fe_bulk
+  REAL*8 :: neighborhood,neighborhoodfrom,neighborhoodto
+  INTEGER :: xloop, yloop
 
   atom_id = ((fromz-1)*(cs_x*cs_y)) + ((fromy-1)*cs_x) + fromx
 
   kbT = 0.000086173423d0 * temperature
 
 
-  if (pt == 1) then 
+  IF (pt == 1) THEN
 
   s_surf = 0.075d0 ; fe_surf = 0.075d0
   s_bulk = 0.075d0 ; fe_bulk = 0.075d0
 
-     if (mod(fromx+fromy+fromz,2).gt.0) then
+     IF (MOD(fromx+fromy+fromz,2).GT.0) THEN
         process_barrier = 0.0d0 - (s_surf + ((s_bulk-s_surf)*(cs_z-fromz)))
-     else
+     ELSE
         process_barrier = 0.0d0 - (fe_surf + ((fe_bulk-fe_surf)*(cs_z-fromz)))
-     end if
+     END IF
 
 ! Neighborhood sampling
 neighborhood = 0.0d0
-do xloop = tox-1,tox+1,2
-if (xloop<1)  then
+DO xloop = tox-1,tox+1,2
+IF (xloop<1)  THEN
 neighborhood = neighborhood + posns(cs_x,toy,toz)
-elseif (xloop>cs_x)then
+ELSEIF (xloop>cs_x)THEN
 neighborhood = neighborhood + posns(1,toy,toz)
-else
+ELSE
 neighborhood = neighborhood + posns(xloop,toy,toz)
-end if
-end do
+END IF
+END DO
 
-do yloop = toy-1,toy+1,2
-if (yloop<1)  then
+DO yloop = toy-1,toy+1,2
+IF (yloop<1)  THEN
 neighborhood = neighborhood + posns(tox,cs_y,toz)
-elseif (yloop>cs_y)then
+ELSEIF (yloop>cs_y)THEN
 neighborhood = neighborhood + posns(tox,1,toz)
-else
+ELSE
 neighborhood = neighborhood + posns(tox,yloop,toz)
-end if
-end do
+END IF
+END DO
 ! Done neighborhood sampling
 
  process_barrier = process_barrier * ((neighborhood/8.0d0))
 
-     if (mod(fromx+fromy+fromz,2).gt.0) then
+     IF (MOD(fromx+fromy+fromz,2).GT.0) THEN
          process_barrier = process_barrier - 1.47d0
-     else
+     ELSE
          process_barrier = process_barrier - 1.47d0 - 0.08d0
-     end if
+     END IF
 
 
-     do lp = 1, nompa
-        if (proc1(atom_id, lp)%fx == 0) then
+     DO lp = 1, nompa
+        IF (proc1(atom_id, lp)%fx == 0) THEN
            proc1(atom_id,lp)%fx = fromx ; proc1(atom_id,lp)%fy = fromy ; proc1(atom_id,lp)%fz = fromz
            proc1(atom_id,lp)%tx = tox ; proc1(atom_id,lp)%ty = toy ; proc1(atom_id,lp)%tz = toz
            proc1(atom_id,lp)%prob = (10**6)*dexp(process_barrier/kbT)*(10**6)
-        exit
-        end if
-     end do
+        EXIT
+        END IF
+     END DO
 
 
 
@@ -653,112 +653,112 @@ end do
 
 
 
-  else if (pt == 2) then 
+  ELSE IF (pt == 2) THEN
 
 
   s_surf = 0.075d0 ; fe_surf = 0.075d0
   s_bulk = 0.075d0 ; fe_bulk = 0.075d0
 
-     if (mod(fromx+fromy+fromz,2).gt.0) then
+     IF (MOD(fromx+fromy+fromz,2).GT.0) THEN
         process_barrier = 0.0d0 + (s_surf + ((s_bulk-s_surf)*(cs_z-fromz)))
-     else
+     ELSE
         process_barrier = 0.0d0 + (fe_surf + ((fe_bulk-fe_surf)*(cs_z-fromz)))
-     end if
+     END IF
 
 ! Neighborhood sampling
 neighborhood = 0.0d0
-do xloop = tox-1,tox+1,2
-if (xloop<1)  then
+DO xloop = tox-1,tox+1,2
+IF (xloop<1)  THEN
 neighborhood = neighborhood + posns(cs_x,toy,toz)
-elseif (xloop>cs_x)then
+ELSEIF (xloop>cs_x)THEN
 neighborhood = neighborhood + posns(1,toy,toz)
-else
+ELSE
 neighborhood = neighborhood + posns(xloop,toy,toz)
-end if
-end do
+END IF
+END DO
 
-do yloop = toy-1,toy+1,2
-if (yloop<1)  then
+DO yloop = toy-1,toy+1,2
+IF (yloop<1)  THEN
 neighborhood = neighborhood + posns(tox,cs_y,toz)
-elseif (yloop>cs_y)then
+ELSEIF (yloop>cs_y)THEN
 neighborhood = neighborhood + posns(tox,1,toz)
-else
+ELSE
 neighborhood = neighborhood + posns(tox,yloop,toz)
-end if
-end do
+END IF
+END DO
 ! Done neighborhood sampling
 
  process_barrier = process_barrier * ((neighborhood/8.0d0))
 
-     if (mod(fromx+fromy+fromz,2).gt.0) then
+     IF (MOD(fromx+fromy+fromz,2).GT.0) THEN
         process_barrier = process_barrier - 1.600
-     else
+     ELSE
         process_barrier = process_barrier - 1.60d0 + 0.08d0
-     end if
+     END IF
 
 
-     do lp = 1, nompa
-        if (proc2(atom_id, lp)%fx == 0) then
+     DO lp = 1, nompa
+        IF (proc2(atom_id, lp)%fx == 0) THEN
            proc2(atom_id,lp)%fx = fromx ; proc2(atom_id,lp)%fy = fromy ; proc2(atom_id,lp)%fz = fromz
            proc2(atom_id,lp)%tx = tox ; proc2(atom_id,lp)%ty = toy ; proc2(atom_id,lp)%tz = toz
            proc2(atom_id,lp)%prob = (10**6)*dexp(process_barrier/kbT)*(10**6)
-        exit
-        end if
-     end do
+        EXIT
+        END IF
+     END DO
 
 
 
 
 
 
-   else if (pt == 3) then 
+   ELSE IF (pt == 3) THEN
 
 
 ! Neighborhood sampling
 neighborhood = 0.0d0
-do xloop = tox-1,tox+1,2
-if (xloop<1)  then
+DO xloop = tox-1,tox+1,2
+IF (xloop<1)  THEN
 neighborhood = neighborhood + posns(cs_x,toy,toz)
-elseif (xloop>cs_x)then
+ELSEIF (xloop>cs_x)THEN
 neighborhood = neighborhood + posns(1,toy,toz)
-else
+ELSE
 neighborhood = neighborhood + posns(xloop,toy,toz)
-end if
-end do
+END IF
+END DO
 
-do yloop = toy-1,toy+1,2
-if (yloop<1)  then
+DO yloop = toy-1,toy+1,2
+IF (yloop<1)  THEN
 neighborhood = neighborhood + posns(tox,cs_y,toz)
-elseif (yloop>cs_y)then
+ELSEIF (yloop>cs_y)THEN
 neighborhood = neighborhood + posns(tox,1,toz)
-else
+ELSE
 neighborhood = neighborhood + posns(tox,yloop,toz)
-end if
-end do
+END IF
+END DO
 
 neighborhoodto = neighborhood
 
 
 neighborhood = 0.0d0
-do xloop = fromx-1,fromx+1,2
-if (xloop<1)  then
+DO xloop = fromx-1,fromx+1,2
+IF (xloop<1)  THEN
 neighborhood = neighborhood + posns(cs_x,fromy,fromz)
-elseif (xloop>cs_x)then
+ELSEIF (xloop>cs_x)THEN
 neighborhood = neighborhood + posns(1,fromy,fromz)
-else
+ELSE
 neighborhood = neighborhood + posns(xloop,fromy,fromz)
-end if
-end do
+END IF
+END DO
 
-do yloop = fromy-1,fromy+1,2
-if (yloop<1)  then
+DO yloop = fromy-1,fromy+1,2
+IF (yloop<1)  THEN
 neighborhood = neighborhood + posns(fromx,cs_y,fromz)
-elseif (yloop>cs_y)then
+ELSEIF (yloop>cs_y)THEN
 neighborhood = neighborhood + posns(fromx,1,fromz)
-else
+ELSE
 neighborhood = neighborhood + posns(fromx,yloop,fromz)
-end if
-end do
+END IF
+END DO
 
 neighborhoodfrom = neighborhood
 
@@ -767,109 +767,107 @@ neighborhoodfrom = neighborhood
   s_surf = 0.00d0 ; fe_surf = 0.00d0
   s_bulk = 0.00d0 ; fe_bulk = 0.00d0
 
-     if (mod(fromx+fromy+fromz,2).gt.0) then
+     IF (MOD(fromx+fromy+fromz,2).GT.0) THEN
         process_barrier = 0.0d0 - (s_surf + ((s_bulk-s_surf)*(cs_z-fromz)))
-     else
+     ELSE
         process_barrier = 0.0d0 - (fe_surf + ((fe_bulk-fe_surf)*(cs_z-fromz)))
-     end if
+     END IF
 
      process_barrier = process_barrier + (0.1125d0 * ((neighborhoodfrom/8.0d0) - (neighborhoodto/8.0d0) )) - 1.35d0
 
-     do lp = 1, nompa
-        if (proc3(atom_id, lp)%fx == 0) then
+     DO lp = 1, nompa
+        IF (proc3(atom_id, lp)%fx == 0) THEN
            proc3(atom_id,lp)%fx = fromx ; proc3(atom_id,lp)%fy = fromy ; proc3(atom_id,lp)%fz = fromz
-           proc3(atom_id,lp)%tx = tox ; proc3(atom_id,lp)%ty = toy ; proc3(atom_id,lp)%tz = toz 
+           proc3(atom_id,lp)%tx = tox ; proc3(atom_id,lp)%ty = toy ; proc3(atom_id,lp)%tz = toz
            proc3(atom_id,lp)%prob = (10**6)*dexp(process_barrier/kbT)*(10**6)
-        exit
-        end if
-     end do
+        EXIT
+        END IF
+     END DO
 
-  end if
-
-
-end subroutine make_ptl
+  END IF
 
 
+END SUBROUTINE make_ptl
 
 
 
 
 
 
-subroutine rfpls(x_pos,y_pos,z_pos)
-  use commondata
-  implicit none
-  integer :: atom_id
-  integer :: x_pos, y_pos, z_pos
-  integer :: lq
+
+
+SUBROUTINE rfpls(x_pos,y_pos,z_pos)
+  USE commondata
+  IMPLICIT NONE
+  INTEGER :: atom_id
+  INTEGER :: x_pos, y_pos, z_pos
+  INTEGER :: lq
 
 atom_id = ((z_pos-1)*(cs_x*cs_y)) + ((y_pos-1)*(cs_x)) + x_pos
 
-  do lq = 1, nompa
-     proc1(atom_id,lq)%fx = 0 ; proc1(atom_id,lq)%fy = 0 ; proc1(atom_id,lq)%fz = 0 
+  DO lq = 1, nompa
+     proc1(atom_id,lq)%fx = 0 ; proc1(atom_id,lq)%fy = 0 ; proc1(atom_id,lq)%fz = 0
      proc1(atom_id,lq)%tx = 0 ; proc1(atom_id,lq)%ty = 0 ; proc1(atom_id,lq)%tz = 0 ; proc1(atom_id,lq)%prob = 0.0d0
-     proc2(atom_id,lq)%fx = 0 ; proc2(atom_id,lq)%fy = 0 ; proc2(atom_id,lq)%fz = 0 
+     proc2(atom_id,lq)%fx = 0 ; proc2(atom_id,lq)%fy = 0 ; proc2(atom_id,lq)%fz = 0
      proc2(atom_id,lq)%tx = 0 ; proc2(atom_id,lq)%ty = 0 ; proc2(atom_id,lq)%tz = 0 ; proc2(atom_id,lq)%prob = 0.0d0
-     proc3(atom_id,lq)%fx = 0 ; proc3(atom_id,lq)%fy = 0 ; proc3(atom_id,lq)%fz = 0 
+     proc3(atom_id,lq)%fx = 0 ; proc3(atom_id,lq)%fy = 0 ; proc3(atom_id,lq)%fz = 0
      proc3(atom_id,lq)%tx = 0 ; proc3(atom_id,lq)%ty = 0 ; proc3(atom_id,lq)%tz = 0 ; proc3(atom_id,lq)%prob = 0.0d0
-  end do
+  END DO
 
-end subroutine rfpls
-
-
+END SUBROUTINE rfpls
 
 
-subroutine upnl(ma_x,ma_y,ma_z)
-  use commondata
-  implicit none
-  integer :: ma_x,ma_y,ma_z, lp,lq,lr, newlp,newlq,newlr, atom_id, getatomid
 
-  do lp = ma_x-1, ma_x+1
-     do lq = ma_y-1, ma_y+1
-        do lr = ma_z-1, ma_z+1
 
-           if (lp .lt. 1) then
+SUBROUTINE upnl(ma_x,ma_y,ma_z)
+  USE commondata
+  IMPLICIT NONE
+  INTEGER :: ma_x,ma_y,ma_z, lp,lq,lr, newlp,newlq,newlr, atom_id, getatomid
+
+  DO lp = ma_x-1, ma_x+1
+     DO lq = ma_y-1, ma_y+1
+        DO lr = ma_z-1, ma_z+1
+
+           IF (lp .LT. 1) THEN
               newlp = cs_x
-           else if (lp .gt. cs_x) then
+           ELSE IF (lp .GT. cs_x) THEN
               newlp = 1
-           else
+           ELSE
               newlp = lp
-           end if
+           END IF
 
-           if (lq .lt. 1) then
+           IF (lq .LT. 1) THEN
               newlq = cs_y
-           else if (lq .gt. cs_y) then
+           ELSE IF (lq .GT. cs_y) THEN
               newlq = 1
-           else
+           ELSE
               newlq = lq
-           end if
+           END IF
 
-           if (lr .lt. 1) then
+           IF (lr .LT. 1) THEN
               newlr = cs_z
-           else if (lr .gt. cs_z) then
+           ELSE IF (lr .GT. cs_z) THEN
               newlr = 1
-           else
+           ELSE
               newlr = lr
-           end if
+           END IF
 
 
-           if (posns(newlp, newlq, newlr) .gt. -1) then
-              if ((newlp .ne. ma_x) .or. (newlq .ne. ma_y) .or. (newlr .ne. ma_z))  then
+           IF (posns(newlp, newlq, newlr) .GT. -1) THEN
+              IF ((newlp .NE. ma_x) .OR. (newlq .NE. ma_y) .OR. (newlr .NE. ma_z))  THEN
 
                  atom_id = ((newlr-1)*(cs_x*cs_y)) + ((newlq-1)*cs_x) + newlp
 
-                    call rfpls(newlp,newlq,newlr)
-                    call add_to_plist(newlp,newlq,newlr)
-              
-              end if
-           end if
+                    CALL rfpls(newlp,newlq,newlr)
+                    CALL add_to_plist(newlp,newlq,newlr)
+
+              END IF
+           END IF
 
 
-        end do
-     end do
-  end do
+        END DO
+     END DO
+  END DO
 
 
-end subroutine upnl
-
-  
+END SUBROUTINE upnl
