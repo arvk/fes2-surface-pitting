@@ -24,52 +24,52 @@ END MODULE commondata
 
 PROGRAM run_all_temps
 
-INCLUDE 'mpif.h'
+  INCLUDE 'mpif.h'
 
-INTEGER :: ierr, num_procs, my_rank
+  INTEGER :: ierr, num_procs, my_rank
 
-      CALL MPI_INIT ( ierr )
-      CALL MPI_COMM_RANK (MPI_COMM_WORLD, my_rank, ierr)
-      CALL MPI_COMM_SIZE (MPI_COMM_WORLD, num_procs, ierr)
+  CALL MPI_INIT ( ierr )
+  CALL MPI_COMM_RANK (MPI_COMM_WORLD, my_rank, ierr)
+  CALL MPI_COMM_SIZE (MPI_COMM_WORLD, num_procs, ierr)
 
 
-        IF (my_rank .EQ. 0) THEN
-           CALL kmc(298)
-        ELSE IF (my_rank .EQ. 1) THEN
-           CALL kmc(299)
-        ELSE IF (my_rank .EQ. 2) THEN
-           CALL kmc(393)
-        ELSE IF (my_rank .EQ. 3) THEN
-           CALL kmc(394)
-        ELSE IF (my_rank .EQ. 4) THEN
-           CALL kmc(443)
-        ELSE IF (my_rank .EQ. 5) THEN
-           CALL kmc(444)
-        ELSE IF (my_rank .EQ. 6) THEN
-           CALL kmc(483)
-        ELSE IF (my_rank .EQ. 7) THEN
-           CALL kmc(484)
-        ELSE IF (my_rank .EQ. 8) THEN
-           CALL kmc(513)
-        ELSE IF (my_rank .EQ. 9) THEN
-           CALL kmc(514)
-        ELSE IF (my_rank .EQ. 10) THEN
-           CALL kmc(543)
-        ELSE IF (my_rank .EQ. 11) THEN
-           CALL kmc(544)
-        ELSE IF (my_rank .EQ. 12) THEN
-           CALL kmc(573)
-        ELSE IF (my_rank .EQ. 13) THEN
-           CALL kmc(574)
-        ELSE IF (my_rank .EQ. 14) THEN
-           CALL kmc(603)
-        ELSE IF (my_rank .EQ. 15) THEN
-           CALL kmc(604)
-        END IF
+  IF (my_rank .EQ. 0) THEN
+     CALL kmc(298)
+  ELSE IF (my_rank .EQ. 1) THEN
+     CALL kmc(299)
+  ELSE IF (my_rank .EQ. 2) THEN
+     CALL kmc(393)
+  ELSE IF (my_rank .EQ. 3) THEN
+     CALL kmc(394)
+  ELSE IF (my_rank .EQ. 4) THEN
+     CALL kmc(443)
+  ELSE IF (my_rank .EQ. 5) THEN
+     CALL kmc(444)
+  ELSE IF (my_rank .EQ. 6) THEN
+     CALL kmc(483)
+  ELSE IF (my_rank .EQ. 7) THEN
+     CALL kmc(484)
+  ELSE IF (my_rank .EQ. 8) THEN
+     CALL kmc(513)
+  ELSE IF (my_rank .EQ. 9) THEN
+     CALL kmc(514)
+  ELSE IF (my_rank .EQ. 10) THEN
+     CALL kmc(543)
+  ELSE IF (my_rank .EQ. 11) THEN
+     CALL kmc(544)
+  ELSE IF (my_rank .EQ. 12) THEN
+     CALL kmc(573)
+  ELSE IF (my_rank .EQ. 13) THEN
+     CALL kmc(574)
+  ELSE IF (my_rank .EQ. 14) THEN
+     CALL kmc(603)
+  ELSE IF (my_rank .EQ. 15) THEN
+     CALL kmc(604)
+  END IF
 
-      CALL MPI_FINALIZE ( ierr )
+  CALL MPI_FINALIZE ( ierr )
 
-END PROGRAM
+END PROGRAM run_all_temps
 
 SUBROUTINE kmc(dummy_temperature)
   USE commondata
@@ -139,13 +139,13 @@ SUBROUTINE kmc(dummy_temperature)
 
         IF (fl_1 .LE. p1_prob) THEN
            sp1 = 1
-!           write(6,*) dummy_temperature, 'CHOSEN PROCESS: 1'
+           !           write(6,*) dummy_temperature, 'CHOSEN PROCESS: 1'
         ELSE IF ((fl_1 .GT. p1_prob) .AND. (fl_1 .LE. p1_prob+p2_prob)) THEN
            sp1 = 2
-!           write(6,*) dummy_temperature, 'CHOSEN PROCESS: 2'
+           !           write(6,*) dummy_temperature, 'CHOSEN PROCESS: 2'
         ELSE
            sp1 = 3
-!           write(6,*) dummy_temperature, 'CHOSEN PROCESS: 3'
+           !           write(6,*) dummy_temperature, 'CHOSEN PROCESS: 3'
         END IF
 
         CALL make_move(sp1)
@@ -317,9 +317,9 @@ SUBROUTINE make_move(sp1)
               moved_to_x = proc1(rn1,rn2)%tx ; moved_to_y = proc1(rn1,rn2)%ty ; moved_to_z = proc1(rn1,rn2)%tz
 
               IF (MOD(moved_from_x+moved_from_y+moved_from_z,2).GT.0) THEN
-posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)=posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)-1
+                 posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)=posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)-1
               ELSE
-posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)=posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)-2
+                 posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)=posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)-2
               END IF
 
               CALL rfpls(moved_from_x,moved_from_y,moved_from_z) ; CALL add_to_plist(moved_from_x,moved_from_y,moved_from_z)
@@ -354,9 +354,9 @@ posns(proc1(rn1,rn2)%fx,proc1(rn1,rn2)%fy,proc1(rn1,rn2)%fz)=posns(proc1(rn1,rn2
               moved_to_x = proc2(rn1,rn2)%tx ; moved_to_y = proc2(rn1,rn2)%ty ; moved_to_z = proc2(rn1,rn2)%tz
 
               IF (MOD(moved_from_x+moved_from_y+moved_from_z,2).GT.0) THEN
-posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)=posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)+1
+                 posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)=posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)+1
               ELSE
-posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)=posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)+2
+                 posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)=posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)+2
               END IF
 
               CALL rfpls(moved_from_x,moved_from_y,moved_from_z) ; CALL add_to_plist(moved_from_x,moved_from_y,moved_from_z)
@@ -394,11 +394,11 @@ posns(proc2(rn1,rn2)%fx,proc2(rn1,rn2)%fy,proc2(rn1,rn2)%fz)=posns(proc2(rn1,rn2
               moved_to_x = proc3(rn1,rn2)%tx ; moved_to_y = proc3(rn1,rn2)%ty ; moved_to_z = proc3(rn1,rn2)%tz
 
               IF (MOD(moved_from_x+moved_from_y+moved_from_z,2).GT.0) THEN
-posns(proc3(rn1,rn2)%fx,proc3(rn1,rn2)%fy,proc3(rn1,rn2)%fz)=posns(proc3(rn1,rn2)%fx,proc3(rn1,rn2)%fy,proc3(rn1,rn2)%fz)+1
-posns(proc3(rn1,rn2)%tx,proc3(rn1,rn2)%ty,proc3(rn1,rn2)%tz)=posns(proc3(rn1,rn2)%tx,proc3(rn1,rn2)%ty,proc3(rn1,rn2)%tz)-1
+                 posns(proc3(rn1,rn2)%fx,proc3(rn1,rn2)%fy,proc3(rn1,rn2)%fz)=posns(proc3(rn1,rn2)%fx,proc3(rn1,rn2)%fy,proc3(rn1,rn2)%fz)+1
+                 posns(proc3(rn1,rn2)%tx,proc3(rn1,rn2)%ty,proc3(rn1,rn2)%tz)=posns(proc3(rn1,rn2)%tx,proc3(rn1,rn2)%ty,proc3(rn1,rn2)%tz)-1
               ELSE
-posns(proc3(rn1,rn2)%fx,proc3(rn1,rn2)%fy,proc3(rn1,rn2)%fz)=posns(proc3(rn1,rn2)%fx,proc3(rn1,rn2)%fy,proc3(rn1,rn2)%fz)+2
-posns(proc3(rn1,rn2)%tx,proc3(rn1,rn2)%ty,proc3(rn1,rn2)%tz)=posns(proc3(rn1,rn2)%tx,proc3(rn1,rn2)%ty,proc3(rn1,rn2)%tz)-2
+                 posns(proc3(rn1,rn2)%fx,proc3(rn1,rn2)%fy,proc3(rn1,rn2)%fz)=posns(proc3(rn1,rn2)%fx,proc3(rn1,rn2)%fy,proc3(rn1,rn2)%fz)+2
+                 posns(proc3(rn1,rn2)%tx,proc3(rn1,rn2)%ty,proc3(rn1,rn2)%tz)=posns(proc3(rn1,rn2)%tx,proc3(rn1,rn2)%ty,proc3(rn1,rn2)%tz)-2
               END IF
 
               CALL rfpls(moved_from_x,moved_from_y,moved_from_z) ; CALL add_to_plist(moved_from_x,moved_from_y,moved_from_z)
@@ -480,7 +480,7 @@ SUBROUTINE initialize_plist()
   DO z_pos = 1, cs_z
      DO y_pos = 1, cs_y
         DO x_pos = 1, cs_x
-              CALL add_to_plist(x_pos,y_pos,z_pos)
+           CALL add_to_plist(x_pos,y_pos,z_pos)
         END DO
      END DO
   END DO
@@ -491,12 +491,12 @@ SUBROUTINE read_parameters()
   USE commondata
   IMPLICIT NONE
 
-WRITE(6,*) TRIM(temperature_string)
+  WRITE(6,*) TRIM(temperature_string)
 
   ! Read lattice parameters
   CALL system("cat "//TRIM(temperature_string)//"K/param.in | grep ^LATTICE | sed 's/LATTICE//g'| sed 's/=//g' > "//TRIM(temperature_string)//"K/.toget-lattice")
   OPEN(unit = 7001, file = ""//TRIM(temperature_string)//"K/.toget-lattice", status = 'old') ; READ(7001,*) cs_x, cs_y, cs_z ; CLOSE(7001)
-WRITE(6,*) 'Hi'
+  WRITE(6,*) 'Hi'
   CALL system ("rm "//TRIM(temperature_string)//"K/.toget-lattice")
 
   ! Read number of species and number of atoms in each species
@@ -528,44 +528,44 @@ SUBROUTINE add_to_plist(lp,lq,lr)
   INTEGER :: xloop, yloop ! PLEASE change variable names
   INTEGER :: xp, yp, zp ! PLEASE change variable names
 
-! Create vacancies
+  ! Create vacancies
   IF (posns(lp,lq,lr) .NE. 0) THEN
      pt = 1 ; CALL make_ptl(pt,lp,lq,lr,lp,lq,lr)
   END IF
 
-! Fill vacancies
+  ! Fill vacancies
   IF (posns(lp,lq,lr) .NE. 2) THEN
      pt = 2 ; CALL make_ptl(pt,lp,lq,lr,lp,lq,lr)
   END IF
 
-! Diffusion
+  ! Diffusion
   IF (posns(lp,lq,lr) .NE. 2) THEN
 
-DO xloop = lp-1,lp+1,2
-DO yloop = lq-1,lq+1,2
+     DO xloop = lp-1,lp+1,2
+        DO yloop = lq-1,lq+1,2
 
-IF (xloop<1)  THEN
-loop1 = cs_x
-ELSEIF (xloop>cs_x)THEN
-loop1 = 1
-ELSE
-loop1 = xloop
-END IF
+           IF (xloop<1)  THEN
+              loop1 = cs_x
+           ELSEIF (xloop>cs_x)THEN
+              loop1 = 1
+           ELSE
+              loop1 = xloop
+           END IF
 
-IF (yloop<1)  THEN
-loop2 = cs_x
-ELSEIF (yloop>cs_x)THEN
-loop2 = 1
-ELSE
-loop2 = yloop
-END IF
+           IF (yloop<1)  THEN
+              loop2 = cs_x
+           ELSEIF (yloop>cs_x)THEN
+              loop2 = 1
+           ELSE
+              loop2 = yloop
+           END IF
 
-  IF (posns(loop1,loop2,lr) .NE. 0) THEN
-     pt = 3 ; CALL make_ptl(pt,lp,lq,lr,loop1,loop2,lr)
-  END IF
+           IF (posns(loop1,loop2,lr) .NE. 0) THEN
+              pt = 3 ; CALL make_ptl(pt,lp,lq,lr,loop1,loop2,lr)
+           END IF
 
-END DO
-END DO
+        END DO
+     END DO
 
   END IF
 
@@ -594,8 +594,8 @@ SUBROUTINE make_ptl(pt, fromx, fromy, fromz, tox, toy, toz)
 
   IF (pt == 1) THEN
 
-  s_surf = 0.075d0 ; fe_surf = 0.075d0
-  s_bulk = 0.075d0 ; fe_bulk = 0.075d0
+     s_surf = 0.075d0 ; fe_surf = 0.075d0
+     s_bulk = 0.075d0 ; fe_bulk = 0.075d0
 
      IF (MOD(fromx+fromy+fromz,2).GT.0) THEN
         process_barrier = 0.0d0 - (s_surf + ((s_bulk-s_surf)*(cs_z-fromz)))
@@ -603,35 +603,35 @@ SUBROUTINE make_ptl(pt, fromx, fromy, fromz, tox, toy, toz)
         process_barrier = 0.0d0 - (fe_surf + ((fe_bulk-fe_surf)*(cs_z-fromz)))
      END IF
 
-! Neighborhood sampling
-neighborhood = 0.0d0
-DO xloop = tox-1,tox+1,2
-IF (xloop<1)  THEN
-neighborhood = neighborhood + posns(cs_x,toy,toz)
-ELSEIF (xloop>cs_x)THEN
-neighborhood = neighborhood + posns(1,toy,toz)
-ELSE
-neighborhood = neighborhood + posns(xloop,toy,toz)
-END IF
-END DO
+     ! Neighborhood sampling
+     neighborhood = 0.0d0
+     DO xloop = tox-1,tox+1,2
+        IF (xloop<1)  THEN
+           neighborhood = neighborhood + posns(cs_x,toy,toz)
+        ELSEIF (xloop>cs_x)THEN
+           neighborhood = neighborhood + posns(1,toy,toz)
+        ELSE
+           neighborhood = neighborhood + posns(xloop,toy,toz)
+        END IF
+     END DO
 
-DO yloop = toy-1,toy+1,2
-IF (yloop<1)  THEN
-neighborhood = neighborhood + posns(tox,cs_y,toz)
-ELSEIF (yloop>cs_y)THEN
-neighborhood = neighborhood + posns(tox,1,toz)
-ELSE
-neighborhood = neighborhood + posns(tox,yloop,toz)
-END IF
-END DO
-! Done neighborhood sampling
+     DO yloop = toy-1,toy+1,2
+        IF (yloop<1)  THEN
+           neighborhood = neighborhood + posns(tox,cs_y,toz)
+        ELSEIF (yloop>cs_y)THEN
+           neighborhood = neighborhood + posns(tox,1,toz)
+        ELSE
+           neighborhood = neighborhood + posns(tox,yloop,toz)
+        END IF
+     END DO
+     ! Done neighborhood sampling
 
- process_barrier = process_barrier * ((neighborhood/8.0d0))
+     process_barrier = process_barrier * ((neighborhood/8.0d0))
 
      IF (MOD(fromx+fromy+fromz,2).GT.0) THEN
-         process_barrier = process_barrier - 1.47d0
+        process_barrier = process_barrier - 1.47d0
      ELSE
-         process_barrier = process_barrier - 1.47d0 - 0.08d0
+        process_barrier = process_barrier - 1.47d0 - 0.08d0
      END IF
 
 
@@ -640,7 +640,7 @@ END DO
            proc1(atom_id,lp)%fx = fromx ; proc1(atom_id,lp)%fy = fromy ; proc1(atom_id,lp)%fz = fromz
            proc1(atom_id,lp)%tx = tox ; proc1(atom_id,lp)%ty = toy ; proc1(atom_id,lp)%tz = toz
            proc1(atom_id,lp)%prob = (10**6)*dexp(process_barrier/kbT)*(10**6)
-        EXIT
+           EXIT
         END IF
      END DO
 
@@ -656,8 +656,8 @@ END DO
   ELSE IF (pt == 2) THEN
 
 
-  s_surf = 0.075d0 ; fe_surf = 0.075d0
-  s_bulk = 0.075d0 ; fe_bulk = 0.075d0
+     s_surf = 0.075d0 ; fe_surf = 0.075d0
+     s_bulk = 0.075d0 ; fe_bulk = 0.075d0
 
      IF (MOD(fromx+fromy+fromz,2).GT.0) THEN
         process_barrier = 0.0d0 + (s_surf + ((s_bulk-s_surf)*(cs_z-fromz)))
@@ -665,30 +665,30 @@ END DO
         process_barrier = 0.0d0 + (fe_surf + ((fe_bulk-fe_surf)*(cs_z-fromz)))
      END IF
 
-! Neighborhood sampling
-neighborhood = 0.0d0
-DO xloop = tox-1,tox+1,2
-IF (xloop<1)  THEN
-neighborhood = neighborhood + posns(cs_x,toy,toz)
-ELSEIF (xloop>cs_x)THEN
-neighborhood = neighborhood + posns(1,toy,toz)
-ELSE
-neighborhood = neighborhood + posns(xloop,toy,toz)
-END IF
-END DO
+     ! Neighborhood sampling
+     neighborhood = 0.0d0
+     DO xloop = tox-1,tox+1,2
+        IF (xloop<1)  THEN
+           neighborhood = neighborhood + posns(cs_x,toy,toz)
+        ELSEIF (xloop>cs_x)THEN
+           neighborhood = neighborhood + posns(1,toy,toz)
+        ELSE
+           neighborhood = neighborhood + posns(xloop,toy,toz)
+        END IF
+     END DO
 
-DO yloop = toy-1,toy+1,2
-IF (yloop<1)  THEN
-neighborhood = neighborhood + posns(tox,cs_y,toz)
-ELSEIF (yloop>cs_y)THEN
-neighborhood = neighborhood + posns(tox,1,toz)
-ELSE
-neighborhood = neighborhood + posns(tox,yloop,toz)
-END IF
-END DO
-! Done neighborhood sampling
+     DO yloop = toy-1,toy+1,2
+        IF (yloop<1)  THEN
+           neighborhood = neighborhood + posns(tox,cs_y,toz)
+        ELSEIF (yloop>cs_y)THEN
+           neighborhood = neighborhood + posns(tox,1,toz)
+        ELSE
+           neighborhood = neighborhood + posns(tox,yloop,toz)
+        END IF
+     END DO
+     ! Done neighborhood sampling
 
- process_barrier = process_barrier * ((neighborhood/8.0d0))
+     process_barrier = process_barrier * ((neighborhood/8.0d0))
 
      IF (MOD(fromx+fromy+fromz,2).GT.0) THEN
         process_barrier = process_barrier - 1.600
@@ -702,7 +702,7 @@ END DO
            proc2(atom_id,lp)%fx = fromx ; proc2(atom_id,lp)%fy = fromy ; proc2(atom_id,lp)%fz = fromz
            proc2(atom_id,lp)%tx = tox ; proc2(atom_id,lp)%ty = toy ; proc2(atom_id,lp)%tz = toz
            proc2(atom_id,lp)%prob = (10**6)*dexp(process_barrier/kbT)*(10**6)
-        EXIT
+           EXIT
         END IF
      END DO
 
@@ -711,61 +711,61 @@ END DO
 
 
 
-   ELSE IF (pt == 3) THEN
+  ELSE IF (pt == 3) THEN
 
 
-! Neighborhood sampling
-neighborhood = 0.0d0
-DO xloop = tox-1,tox+1,2
-IF (xloop<1)  THEN
-neighborhood = neighborhood + posns(cs_x,toy,toz)
-ELSEIF (xloop>cs_x)THEN
-neighborhood = neighborhood + posns(1,toy,toz)
-ELSE
-neighborhood = neighborhood + posns(xloop,toy,toz)
-END IF
-END DO
+     ! Neighborhood sampling
+     neighborhood = 0.0d0
+     DO xloop = tox-1,tox+1,2
+        IF (xloop<1)  THEN
+           neighborhood = neighborhood + posns(cs_x,toy,toz)
+        ELSEIF (xloop>cs_x)THEN
+           neighborhood = neighborhood + posns(1,toy,toz)
+        ELSE
+           neighborhood = neighborhood + posns(xloop,toy,toz)
+        END IF
+     END DO
 
-DO yloop = toy-1,toy+1,2
-IF (yloop<1)  THEN
-neighborhood = neighborhood + posns(tox,cs_y,toz)
-ELSEIF (yloop>cs_y)THEN
-neighborhood = neighborhood + posns(tox,1,toz)
-ELSE
-neighborhood = neighborhood + posns(tox,yloop,toz)
-END IF
-END DO
+     DO yloop = toy-1,toy+1,2
+        IF (yloop<1)  THEN
+           neighborhood = neighborhood + posns(tox,cs_y,toz)
+        ELSEIF (yloop>cs_y)THEN
+           neighborhood = neighborhood + posns(tox,1,toz)
+        ELSE
+           neighborhood = neighborhood + posns(tox,yloop,toz)
+        END IF
+     END DO
 
-neighborhoodto = neighborhood
+     neighborhoodto = neighborhood
 
 
-neighborhood = 0.0d0
-DO xloop = fromx-1,fromx+1,2
-IF (xloop<1)  THEN
-neighborhood = neighborhood + posns(cs_x,fromy,fromz)
-ELSEIF (xloop>cs_x)THEN
-neighborhood = neighborhood + posns(1,fromy,fromz)
-ELSE
-neighborhood = neighborhood + posns(xloop,fromy,fromz)
-END IF
-END DO
+     neighborhood = 0.0d0
+     DO xloop = fromx-1,fromx+1,2
+        IF (xloop<1)  THEN
+           neighborhood = neighborhood + posns(cs_x,fromy,fromz)
+        ELSEIF (xloop>cs_x)THEN
+           neighborhood = neighborhood + posns(1,fromy,fromz)
+        ELSE
+           neighborhood = neighborhood + posns(xloop,fromy,fromz)
+        END IF
+     END DO
 
-DO yloop = fromy-1,fromy+1,2
-IF (yloop<1)  THEN
-neighborhood = neighborhood + posns(fromx,cs_y,fromz)
-ELSEIF (yloop>cs_y)THEN
-neighborhood = neighborhood + posns(fromx,1,fromz)
-ELSE
-neighborhood = neighborhood + posns(fromx,yloop,fromz)
-END IF
-END DO
+     DO yloop = fromy-1,fromy+1,2
+        IF (yloop<1)  THEN
+           neighborhood = neighborhood + posns(fromx,cs_y,fromz)
+        ELSEIF (yloop>cs_y)THEN
+           neighborhood = neighborhood + posns(fromx,1,fromz)
+        ELSE
+           neighborhood = neighborhood + posns(fromx,yloop,fromz)
+        END IF
+     END DO
 
-neighborhoodfrom = neighborhood
+     neighborhoodfrom = neighborhood
 
-! Done neighborhood sampling
+     ! Done neighborhood sampling
 
-  s_surf = 0.00d0 ; fe_surf = 0.00d0
-  s_bulk = 0.00d0 ; fe_bulk = 0.00d0
+     s_surf = 0.00d0 ; fe_surf = 0.00d0
+     s_bulk = 0.00d0 ; fe_bulk = 0.00d0
 
      IF (MOD(fromx+fromy+fromz,2).GT.0) THEN
         process_barrier = 0.0d0 - (s_surf + ((s_bulk-s_surf)*(cs_z-fromz)))
@@ -780,7 +780,7 @@ neighborhoodfrom = neighborhood
            proc3(atom_id,lp)%fx = fromx ; proc3(atom_id,lp)%fy = fromy ; proc3(atom_id,lp)%fz = fromz
            proc3(atom_id,lp)%tx = tox ; proc3(atom_id,lp)%ty = toy ; proc3(atom_id,lp)%tz = toz
            proc3(atom_id,lp)%prob = (10**6)*dexp(process_barrier/kbT)*(10**6)
-        EXIT
+           EXIT
         END IF
      END DO
 
@@ -803,7 +803,7 @@ SUBROUTINE rfpls(x_pos,y_pos,z_pos)
   INTEGER :: x_pos, y_pos, z_pos
   INTEGER :: lq
 
-atom_id = ((z_pos-1)*(cs_x*cs_y)) + ((y_pos-1)*(cs_x)) + x_pos
+  atom_id = ((z_pos-1)*(cs_x*cs_y)) + ((y_pos-1)*(cs_x)) + x_pos
 
   DO lq = 1, nompa
      proc1(atom_id,lq)%fx = 0 ; proc1(atom_id,lq)%fy = 0 ; proc1(atom_id,lq)%fz = 0
@@ -858,8 +858,8 @@ SUBROUTINE upnl(ma_x,ma_y,ma_z)
 
                  atom_id = ((newlr-1)*(cs_x*cs_y)) + ((newlq-1)*cs_x) + newlp
 
-                    CALL rfpls(newlp,newlq,newlr)
-                    CALL add_to_plist(newlp,newlq,newlr)
+                 CALL rfpls(newlp,newlq,newlr)
+                 CALL add_to_plist(newlp,newlq,newlr)
 
               END IF
            END IF
