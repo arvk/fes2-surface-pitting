@@ -1,4 +1,4 @@
-# FeS<sub>2</sub>-surface-kMC #
+# FeS<sub>2</sub>-surface-pitting #
 
 This is a simple Fortran program for simulating dynamics of point defects (Fe and S vacancies) at different temperatures on the (100) surface of pyrite, FeS<sub>2</sub> using kinetic Monte Carlo. This code is supplementary information for the journal article **Dynamics of point defect formation, clustering and pit initiation on the pyrite surface**, *Electrochimica Acta*, 127, 416-426, 2014. DOI: [10.1016/j.electacta.2014.02.048](http://dx.doi.org/10.1016/j.electacta.2014.02.048). The article also provides sources for the barriers used in the code.
 
